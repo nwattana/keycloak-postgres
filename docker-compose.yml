@@ -1,15 +1,15 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:14
+    image: postgres:17
     container_name: keycloak_postgres_kc_lern
     environment:
-
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5447:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     networks:
       - keycloak-network
 
@@ -17,7 +17,18 @@ services:
     image: quay.io/keycloak/keycloak:25.0.1
     container_name: keycloak
     environment:
+      - KC_DB=${KC_DB}
+      - KC_DB_URL=${KC_DB_URL}
+      - KC_DB_USERNAME=${KC_DB_USERNAME}
+      - KC_DB_PASSWORD=${KC_DB_PASSWORD}
+      - KC_LOG_LEVEL=${KC_LOG_LEVEL}
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KC_HEALTH_ENABLED=${KC_HEALTH_ENABLED}
+      - KC_METRICS_ENABLED=${KC_METRICS_ENABLED}
 
+    volumes:
+      - ./data/keycloak:/opt/keycloak/
     ports:
       - "8088:8080"
     depends_on:
@@ -25,9 +36,6 @@ services:
     networks:
       - keycloak-network
     command: start-dev
-
-volumes:
-  postgres_data:
 
 networks:
   keycloak-network:
